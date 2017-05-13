@@ -1,6 +1,6 @@
 {
   "name": "mina-api-server",
-  "port": 5443,
+  "port": 8888,
   "app_id": "wxffecbf2840315757",
   "app_secret": "9abaa43f6fb344c3ebdded8067de9eee",
   "mongo": {
