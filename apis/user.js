@@ -71,11 +71,17 @@ exports.end = function* () {
 // GET /users/history 获取历史记录 今天所有
 exports.history = function* () {
   const { _id: id } = this.user;
-  this.body = yield History.find({
+  const list = yield History.find({
     User: id,
     startAt: {
       $gte: new Date(moment().subtract(8, 'hour').format('YYYY-MM-DD')),
     },
+  });
+
+  this.body = JSON.parse(JSON.stringify(list)).map((h) => {
+    h.startAt = moment(h.startAt).format('HH:MM');
+    h.endAt = moment(h.endAt).format('HH:MM');
+    return h;
   });
 };
 
