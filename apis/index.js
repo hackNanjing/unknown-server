@@ -1,15 +1,18 @@
-'use strict';
-
 const router = require('koa-router')();
-const body = require('koa-better-body');
 
 /*
   controllers
 */
 const user = require('./user');
+const auth = require('../middlewares/auth');
 
 router
   .get('/v1/auth', user.getOpenId)
-  .get('/v1/user/logout', user.logout)
+  .post('/v1/users/login', user.login)
+  .post('/v1/users/end', auth, user.end)
+  .get('/v1/users/history', auth, user.history)
+  .get('/v1/users/profile', auth, user.profile)
+  .get('/v1/users/rank', auth, user.rank)
+  .post('/v1/users/form-id', auth, user.postFormId);
 
 module.exports = router;

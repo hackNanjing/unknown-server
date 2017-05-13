@@ -1,23 +1,16 @@
-'use strict';
-
 const wechatService = require('../services/wechat');
+const moment = require('moment');
+const userService = require('../services/user');
+const Recommend = require('../models/recommend');
+const History = require('../models/history');
+const User = require('../models/user');
+const PushId = require('../models/push_id');
 
-/**
- * @api {get} /v1/logout 登出
- * @apiName logout
- *
- */
-exports.logout = function * () {
-  this.session.user = null;
-  this.status = 401;
-};
-
-
-exports.getOpenId = function * () {
-  let { code } = this.query;
+exports.getOpenId = function* () {
+  const { code } = this.query;
   if (!code) return this.status = 400;
-  
-  let res = yield wechatService.getAuthCode(code);
+
+  const res = yield wechatService.getAuthCode(code);
   if (res.errmsg) {
     this.status = 400;
     this.body = { msg: res.errmsg };
@@ -25,4 +18,89 @@ exports.getOpenId = function * () {
   }
 
   this.body = { openid: res.openid };
-}
+};
+
+exports.login = function* () {
+  const { wechat, location } = this.request.body;
+
+  const user = yield User.findOneAndUpdate({ 'wechat.openid': wechat.openid }, {
+    wechat,
+    location,
+  }, { new: true });
+  this.body = { token: user._id };
+};
+
+//  GET /users/start 开始计时
+exports.start = function* () {
+
+};
+
+// POST /users/end 上一次的排名和这一次的排名
+exports.end = function* () {
+  const { success_minute, total_minute, startAt, recommendId } = this.request.body;
+  const { _id: id, total, before_rank } = this.user;
+
+  yield userService.saveHistory({
+    success_minute,
+    total_minute,
+    startAt,
+    Recommend: recommendId,
+    User: id,
+    endAt: Date.now(),
+    status: success_minute >= total_minute ? 3 : 0,
+  });
+
+  yield userService.addTotal(id, (total + success_minute));
+
+  if (recommendId) {
+    Recommend.findByIdAndUpdate(recommendId, {
+      status: 3,
+    });
+  }
+
+  const meRank = yield userService.getMeRank(id);
+  yield User.findByIdAndUpdate(id, {
+    before_rank: meRank,
+  });
+  this.body = {
+    now: meRank,
+    before_rank,
+  };
+};
+
+// GET /users/history 获取历史记录 今天所有
+exports.history = function* () {
+  const { _id: id } = this.user;
+  this.body = yield History.find({
+    User: id,
+    startAt: {
+      $gte: new Date(moment().subtract(8, 'hour').format('YYYY-MM-DD')),
+    },
+  });
+};
+
+// GET /users/profile 获取总分和个人排名
+exports.profile = function* () {
+  const { _id: id, total } = this.user;
+
+  const rank = yield userService.getMeRank(id);
+  this.body = {
+    total,
+    rank,
+  };
+};
+
+// GET /users/rank 获取排行榜
+exports.rank = function* () {
+  const { _id: id } = this.user;
+
+  const rank = yield userService.getRank(id);
+  this.body = rank;
+};
+
+// post /users/form-id
+exports.postFormId = function* () {
+  const { id } = this.request.body;
+
+  this.body = yield PushId.create({ formId: id });
+};

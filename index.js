@@ -1,12 +1,8 @@
-'use strict';
-
 const Koa = require('koa');
 const config = require('config');
 const bodyParser = require('koa-bodyparser');
 const log4js = require('koa-log4');
 const cors = require('kcors');
-const session = require('koa-generic-session');
-const MongoStore = require('koa-generic-session-mongo');
 const mongoose = require('mongoose');
 const apis = require('./apis');
 const auth = require('./middlewares/auth');
@@ -27,30 +23,22 @@ const app = new Koa();
 
 app.keys = ['mina'];
 app.use(log4js.koaLogger(log4js.getLogger('http'), { level: 'auto' }));
-app.use(session({
-  store: new MongoStore({
-    url: url,
-    collection: 'sessions'
-  })
-}));
+
 app.use(bodyParser({
   onerror: (err, ctx) => {
     ctx.throw(err, 422);
-  }
+  },
 }));
 app.use(cors({
   credentials: true,
-  keepHeadersOnError: true
+  keepHeadersOnError: true,
 }));
-app.use(auth);
 app.use(apis.routes());
 
-app.on('error', err => {
+app.on('error', (err) => {
   if (err.status && err.status < 500) return;
   console.error(err.stack);
 });
 
-const server = require('http').Server(app.callback());
-
-server.listen(config.port, () => logger.info(`Listening on port ${config.port}, god bless ${config.name}!`));
+const server = app.listen(() => logger.info(`Listening on port ${config.port}, god bless ${config.name}!`));
 module.exports = server;

@@ -1,5 +1,3 @@
-'use strict';
-
 const cluster = require('cluster');
 const cpus = require('os').cpus().length;
 const log4js = require('koa-log4');
