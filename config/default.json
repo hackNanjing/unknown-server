@@ -1,0 +1,21 @@
+{
+  "name": "mina-api-server",
+  "port": 5443,
+  "app_id": "wxffecbf2840315757",
+  "app_secret": "9abaa43f6fb344c3ebdded8067de9eee",
+  "mongo": {
+    "host": "127.0.0.1:27017",
+    "db": "mina"
+  },
+  "redis": {
+    "port": 6379,
+    "host": "127.0.0.1",
+    "prefix": "PERF_WEB_SERVER",
+    "error_notify_key": "monit.error",
+    "known_err_key_pref": "monit.knownErrs:",
+    "monitoring_err_key_pref": "monit.monitoringErrs:",
+    "knownErrApi": "http://localhost:5443/v1/analy/knownErr/",
+    "errorAnalysisApi": "http://localhost:5443/v1/analy/errorAnalysis/",
+    "errorMonitApi":"http://localhost:5443/v1/analy/addMonitoredErrs/"
+  }
+}
