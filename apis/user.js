@@ -26,7 +26,7 @@ exports.login = function* () {
   const user = yield User.findOneAndUpdate({ 'wechat.openid': wechat.openid }, {
     wechat,
     location,
-  }, { new: true });
+  }, { upsert: true });
   this.body = { token: user._id };
 };
 
