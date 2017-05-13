@@ -40,5 +40,5 @@ app.on('error', (err) => {
   console.error(err.stack);
 });
 
-const server = app.listen(() => logger.info(`Listening on port ${config.port}, god bless ${config.name}!`));
+const server = app.listen(config.port, () => logger.info(`Listening on port ${config.port}, god bless ${config.name}!`));
 module.exports = server;
