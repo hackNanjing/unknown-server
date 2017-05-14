@@ -3,6 +3,7 @@ const User = require('../models/user');
 const PushId = require('../models/push_id');
 const request = require('request-promise');
 const config = require('../config/default');
+const moment = require('moment');
 
 const service = {
   saveHistory(data) {
@@ -40,18 +41,26 @@ const service = {
     for (const user of users) {
       const pushId = yield PushId.findOne({ User: user._id });
       if (pushId) {
-        const res = yield request(`https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${access_token}`, {
+        const res2 = yield request(`https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${access_token}`, {
+          method: 'POST',
           body: {
             touser: user.wechat.openid,
-            template_id: 'AT0043',
+            template_id: '6yNOo9Gg0kW_5k0DPpUVGVhQOTRIg2xuc68VJt0vKFI',
             page: '/pages/rank',
-            form_id: 'e46b7bd83ec22a40bcfb79158219d570',
+            form_id: pushId.formId,
+            data: {
+              keyword1: {
+                value: '每日附近排行榜',
+                color: '#173177',
+              },
+              keyword2: {
+                value: moment().format('YYYY-MM-DD'),
+              },
+            },
           },
           json: true,
         });
-        console.log(res, 'res');
         yield PushId.remove({ _id: pushId._id });
-        console.log(res);
       }
     }
   },
