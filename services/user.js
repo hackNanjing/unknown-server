@@ -2,6 +2,7 @@ const History = require('../models/history');
 const User = require('../models/user');
 const PushId = require('../models/push_id');
 const request = require('request-promise');
+const config = require('../config/default');
 
 const service = {
   saveHistory(data) {
