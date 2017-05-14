@@ -8,7 +8,7 @@ const apis = require('./apis');
 const auth = require('./middlewares/auth');
 const logger = log4js.getLogger('app');
 
-require('./services/jobs').start();
+// require('./services/jobs').start();
 
 let url = `mongodb://${config.mongo.host}/${config.mongo.db}`;
 if (config.mongo.authSource) {
