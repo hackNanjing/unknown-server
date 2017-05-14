@@ -76,7 +76,7 @@ exports.history = function* () {
     startAt: {
       $gte: new Date(moment().subtract(8, 'hour').format('YYYY-MM-DD')),
     },
-  });
+  }).sort('-startAt');
 
   this.body = JSON.parse(JSON.stringify(list)).map((h) => {
     h.startAt = moment(h.startAt).format('HH:MM');
