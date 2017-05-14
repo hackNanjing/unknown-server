@@ -45,11 +45,11 @@ const service = {
             touser: user.wechat.openid,
             template_id: 'AT0043',
             page: '/pages/rank',
-            form_id: PushId.formId,
-            data: '查看每日附近排名榜',
+            form_id: 'e46b7bd83ec22a40bcfb79158219d570',
           },
           json: true,
         });
+        console.log(res, 'res');
         yield PushId.remove({ _id: pushId._id });
         console.log(res);
       }
