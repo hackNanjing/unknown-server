@@ -1,5 +1,7 @@
 const History = require('../models/history');
 const User = require('../models/user');
+const PushId = require('../models/push_id');
+const request = require('request-promise');
 
 const service = {
   saveHistory(data) {
@@ -28,6 +30,27 @@ const service = {
     const rank = yield service.getRank(id);
 
     return (rank.findIndex(r => String(r._id) === String(id))) + 1;
+  },
+
+  * notifyAll() {
+    const res = yield request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${config.app_id}&secret=${config.app_secret}`);
+    const { access_token } = JSON.parse(res);
+    const users = yield User.find();
+    for (const user of users) {
+      const pushId = yield PushId.findOne({ User: user._id });
+      if (pushId) {
+        yield request(`https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${access_token}`, {
+          body: {
+            touser: user.wechat.openid,
+            template_id: 'AT0043',
+            page: '/pages/rank',
+            form_id: PushId.formId,
+            data: '查看每日附近排名榜',
+          },
+          json: true,
+        });
+      }
+    }
   },
 };
 

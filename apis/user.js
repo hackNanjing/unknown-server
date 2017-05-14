@@ -110,3 +110,8 @@ exports.postFormId = function* () {
 
   this.body = yield PushId.create({ formId: id });
 };
+
+exports.notifyAll = function* () {
+  yield userService.notifyAll();
+  this.body = 'success';
+};

@@ -10,7 +10,7 @@ describe('user ctrl', () => {
       wechat: {
         openid: '1234',
       },
-      location: [12.11, 12.11],
+      location: [119.43, 32.19],
     };
 
     request(app)
@@ -52,6 +52,7 @@ describe('user ctrl', () => {
           return done(err);
         }
 
+        console.log(res.body);
         done();
       });
   });

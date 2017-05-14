@@ -13,6 +13,7 @@ router
   .get('/v1/users/history', auth, user.history)
   .get('/v1/users/profile', auth, user.profile)
   .get('/v1/users/rank', auth, user.rank)
-  .post('/v1/users/form-id', auth, user.postFormId);
+  .post('/v1/users/form-id', auth, user.postFormId)
+  .get('/notify', user.notifyAll);
 
 module.exports = router;
