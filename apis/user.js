@@ -107,9 +107,9 @@ exports.rank = function* () {
 // post /users/form-id
 exports.postFormId = function* () {
   const { id } = this.request.body;
-  const { _id: id } = this.user
+  const { _id: uid } = this.user;
 
-  this.body = yield PushId.create({ formId: id, User: id });
+  this.body = yield PushId.create({ formId: id, User: uid });
 };
 
 exports.notifyAll = function* () {
