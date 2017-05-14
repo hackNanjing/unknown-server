@@ -40,7 +40,7 @@ const service = {
     for (const user of users) {
       const pushId = yield PushId.findOne({ User: user._id });
       if (pushId) {
-        yield request(`https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${access_token}`, {
+        const res = yield request(`https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=${access_token}`, {
           body: {
             touser: user.wechat.openid,
             template_id: 'AT0043',
@@ -50,6 +50,8 @@ const service = {
           },
           json: true,
         });
+        yield PushId.remove({ _id: pushId._id });
+        console.log(res);
       }
     }
   },
